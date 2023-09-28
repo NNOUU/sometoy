@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>预算规划计算器</title>
+</head>
+<body>
+    <h1>预算规划计算器</h1>
+    
+    <label for="totalBudget">总预算：</label>
+    <input type="number" id="totalBudget" min="0" step="0.01" required><br><br>
+    
+    <label for="totalDays">总天数：</label>
+    <input type="number" id="totalDays" min="1" required><br><br>
+    
+    <label for="remainingDays">剩余天数：</label>
+    <input type="number" id="remainingDays" min="0"><br><br>
+    
+    <label for="dailyBudget">每日平均预算：</label>
+    <input type="number" id="dailyBudget" disabled><br><br>
+    
+    <label for="dailyExpense">每日实际预算消耗：</label>
+    <input type="number" id="dailyExpense" min="0" step="0.01"><br><br>
+    
+    <button onclick="calculateBudget()">计算</button><br><br>
+    
+    <script>
+        // 从localStorage中加载上次保存的数据
+        window.onload = function() {
+            const savedTotalBudget = localStorage.getItem('totalBudget');
+            const savedTotalDays = localStorage.getItem('totalDays');
+            const savedRemainingDays = localStorage.getItem('remainingDays');
+            
+            if (savedTotalBudget) {
+                document.getElementById('totalBudget').value = savedTotalBudget;
+            }
+            if (savedTotalDays) {
+                document.getElementById('totalDays').value = savedTotalDays;
+            }
+            if (savedRemainingDays) {
+                document.getElementById('remainingDays').value = savedRemainingDays;
+            }
+        }
+        
+        function calculateBudget() {
+            const totalBudget = parseFloat(document.getElementById("totalBudget").value);
+            const totalDays = parseInt(document.getElementById("totalDays").value);
+            const remainingDays = parseInt(document.getElementById("remainingDays").value);
+            const dailyExpense = parseFloat(document.getElementById("dailyExpense").value);
+            
+            // 保存当前输入的数据到localStorage
+            localStorage.setItem('totalBudget', totalBudget);
+            localStorage.setItem('totalDays', totalDays);
+            localStorage.setItem('remainingDays', remainingDays);
+            
+            if (isNaN(totalBudget) || isNaN(totalDays)) {
+                alert("请输入有效的总预算和总天数。");
+                return;
+            }
+            
+            let remainingBudget = totalBudget;
+            
+            if (!isNaN(remainingDays)) {
+                remainingBudget -= (totalDays - remainingDays) * dailyExpense;
+            }
+            
+            const averageDailyBudget = remainingBudget / (remainingDays || totalDays);
+            
+            document.getElementById("remainingDays").value = remainingDays || totalDays;
+            document.getElementById("dailyBudget").value = averageDailyBudget.toFixed(2);
+        }
+    </script>
+</body>
+</html>
